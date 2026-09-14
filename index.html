@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DECODE - 대화 암호 해독 및 갈등 해결 AI</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        body { font-family: 'Pretendard', sans-serif; }
+        .step-content { display: none; }
+        .step-content.active { display: block; }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between">
+
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="bg-indigo-600 p-2 rounded-lg">
+                    <i data-lucide="cpu" class="w-6 h-6 text-white"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-xl tracking-wider text-indigo-400">DECODE</h1>
+                    <p class="text-xs text-slate-400">대화 속뜻 해독 및 관계 회복 솔루션</p>
+                </div>
+            </div>
+            <span class="text-xs px-3 py-1 bg-indigo-500/10 text-indigo-400 border border-indigo-500/30 rounded-full">AI Helper Online</span>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-3xl mx-auto w-full px-4 py-8 flex-1">
+        
+        <!-- Step Progress Bar -->
+        <div class="mb-8">
+            <div class="flex justify-between text-xs text-slate-400 mb-2">
+                <span id="step-indicator">STEP 1 / 5</span>
+                <span id="step-title">상대방 및 상황 입력</span>
+            </div>
+            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                <div id="progress-bar" class="bg-indigo-500 h-full w-[20%] transition-all duration-300"></div>
+            </div>
+        </div>
+
+        <!-- FORM STARTS -->
+        <div id="app-card" class="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-6 md:p-8 backdrop-blur shadow-xl">
+            
+            <!-- STEP 1: 상황 및 상대 정보 -->
+            <div id="step-1" class="step-content active space-y-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-white mb-2 flex items-center gap-2">
+                        <i data-lucide="user-check" class="text-indigo-400"></i> STEP 1. 상황 설명 및 상대 성향
+                    </h2>
+                    <p class="text-slate-400 text-sm">갈등 상황과 상대방의 평소 성격/말투를 입력해 주세요.</p>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300 mb-1">상대방과의 관계</label>
+                        <select id="relation" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:outline-none focus:border-indigo-500">
+                            <option value="친구">친구</option>
+                            <option value="가족 (부모/자녀/형제)">가족 (부모/자녀/형제)</option>
+                            <option value="연인">연인</option>
+                            <option value="직장 동료">직장 동료</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300 mb-1">상대의 성격 및 평소 말투 (사용자 직접 입력)</label>
+                        <textarea id="target-personality" rows="2" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:outline-none focus:border-indigo-500" placeholder="예: 자존심이 세고 직접적인 표현을 싫어함. 빈정거리는 말투를 자주 씀."></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300 mb-1">어떤 일로 갈등이 생겼나요? (상황 설명)</label>
+                        <textarea id="situation" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:outline-none focus:border-indigo-500" placeholder="예: 주말 약속 시간을 갑자기 변경했는데 상대가 화를 내며 차갑게 반응함."></textarea>
+                    </div>
+                </div>
+
+                <button onclick="nextStep(2)" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-lg transition-all flex items-center justify-center gap-2">
+                    다음: 상대의 말 입력하기 <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <!-- STEP 2: 상대의 말 정리 -->
+            <div id="step-2" class="step-content space-y-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-white mb-2 flex items-center gap-2">
+                        <i data-lucide="message-square" class="text-indigo-400"></i> STEP 2. 상대의 말 입력
+                    </h2>
+                    <p class="text-slate-400 text-sm">상대방이 나에게 직접 했던 말이나 메시지를 정확히 적어주세요.</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-1">상대가 한 말 (텍스트 또는 대화 내용)</label>
+                    <textarea id="target-words" rows="5" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:outline-none focus:border-indigo-500" placeholder="예: '됐어, 너 항상 그런 식이지. 신경 쓰지 말고 너 편할 대로 해.'"></textarea>
+                </div>
+
+                <div class="flex gap-4">
+                    <button onclick="nextStep(1)" class="w-1/3 border border-slate-600 text-slate-300 hover:bg-slate-800 py-3 rounded-lg transition-all">이전</button>
+                    <button onclick="nextStep(3)" class="w-2/3 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-lg transition-all flex items-center justify-center gap-2">
+                        다음: 내 감정 입력하기 <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 3: 나의 감정 상태 확인 -->
+            <div id="step-3" class="step-content space-y-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-white mb-2 flex items-center gap-2">
+                        <i data-lucide="heart-handshake" class="text-indigo-400"></i> STEP 3. 나의 감정 상태 확인
+                    </h2>
+                    <p class="text-slate-400 text-sm">현재 본인이 느끼는 감정과 솔직한 심정을 선택/입력해 주세요.</p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">현재 나의 대표적인 감정</label>
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <button type="button" onclick="selectEmotion(this, '억울하고 억압받는 느낌')" class="emotion-btn border border-slate-700 bg-slate-900 p-3 rounded-lg text-left hover:border-indigo-500">😔 억울함 / 서운함</button>
+                        <button type="button" onclick="selectEmotion(this, '답답하고 화가 남')" class="emotion-btn border border-slate-700 bg-slate-900 p-3 rounded-lg text-left hover:border-indigo-500">😤 답답함 / 분노</button>
+                        <button type="button" onclick="selectEmotion(this, '상대에게 미안하고 죄책감 들음')" class="emotion-btn border border-slate-700 bg-slate-900 p-3 rounded-lg text-left hover:border-indigo-500">🥺 미안함 / 죄책감</button>
+                        <button type="button" onclick="selectEmotion(this, '관계가 끊어질까 봐 불안함')" class="emotion-btn border border-slate-700 bg-slate-900 p-3 rounded-lg text-left hover:border-indigo-500">😨 불안함 / 걱정됨</button>
+                    </div>
+                    <input type="hidden" id="selected-emotion-val" value="서운함">
+
+                    <label class="block text-sm font-medium text-slate-300 mb-1">상세한 내 심정 (선택 사항)</label>
+                    <textarea id="my-feeling-detail" rows="2" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:outline-none focus:border-indigo-500" placeholder="예: 약속을 일부러 어긴 게 아닌데 너무 차갑게 구니까 억울하고 서운해요."></textarea>
+                </div>
+
+                <div class="flex gap-4">
+                    <button onclick="nextStep(2)" class="w-1/3 border border-slate-600 text-slate-300 hover:bg-slate-800 py-3 rounded-lg transition-all">이전</button>
+                    <button onclick="startAnalysis()" class="w-2/3 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-lg transition-all flex items-center justify-center gap-2">
+                        AI 해독 시작하기 <i data-lucide="sparkles" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 4: AI 상황 분석 중 (Loading) -->
+            <div id="step-4" class="step-content text-center py-12 space-y-6">
+                <div class="inline-block p-4 bg-indigo-600/20 rounded-full text-indigo-400 animate-pulse">
+                    <i data-lucide="key-round" class="w-12 h-12 animate-spin"></i>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-white mb-2">상대방의 언어를 해독 중입니다...</h2>
+                    <p class="text-slate-400 text-sm">성격 패턴, 갈등 맥락, 숨겨진 의도 및 작성자의 감정을 종합 분석하고 있습니다.</p>
+                </div>
+                <div class="max-w-md mx-auto space-y-2 text-left bg-slate-900 p-4 rounded-lg border border-slate-800 text-xs text-slate-400 font-mono">
+                    <p class="text-indigo-400">> 상대방 말투 및 성격 데이터 처리 중...</p>
+                    <p class="text-indigo-400">> 겉으로 드러난 말(Surface speech) 분해 완료</p>
+                    <p class="text-indigo-400">> 감정 상태 분석 완료 (사용자 감정 보정 적용)</p>
+                    <p class="text-indigo-400">> 맞춤형 최적 대응 대화 알고리즘 도출 중...</p>
+                </div>
+            </div>
+
+            <!-- STEP 5: 해석과 답변 선정 (결과 페이지) -->
+            <div id="step-5" class="step-content space-y-8">
+                <div>
+                    <span class="text-xs font-bold text-indigo-400 tracking-wider uppercase">Analysis Complete</span>
+                    <h2 class="text-2xl font-bold text-white flex items-center gap-2 mt-1">
+                        <i data-lucide="file-text" class="text-indigo-400"></i> AI 해독 보고서
+                    </h2>
+                </div>
+
+                <!-- 1. 상황 정리 및 AI 분석 -->
+                <div class="bg-slate-900/80 p-5 rounded-xl border border-slate-700/60 space-y-3">
+                    <h3 class="text-sm font-semibold text-indigo-300 flex items-center gap-1.5">
+                        <i data-lucide="info" class="w-4 h-4"></i> 갈등 요약 및 쟁점
+                    </h3>
+                    <p id="res-situation-summary" class="text-slate-300 text-sm leading-relaxed"></p>
+                </div>
+
+                <!-- 2. 상대방 말의 속뜻 해독 -->
+                <div class="bg-indigo-950/40 p-5 rounded-xl border border-indigo-800/50 space-y-3">
+                    <h3 class="text-sm font-semibold text-indigo-400 flex items-center gap-1.5">
+                        <i data-lucide="unlock" class="w-4 h-4"></i> 상대방 말의 진짜 속뜻 (AI Decode)
+                    </h3>
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-800 text-slate-400 text-xs italic">
+                        상대가 한 말: "<span id="res-target-words"></span>"
+                    </div>
+                    <p id="res-decoded-meaning" class="text-slate-200 text-sm font-medium leading-relaxed bg-indigo-900/30 p-4 rounded-lg border border-indigo-700/40"></p>
+                </div>
+
+                <!-- 3. 최적의 대답 제안 -->
+                <div class="space-y-4">
+                    <h3 class="text-sm font-semibold text-emerald-400 flex items-center gap-1.5">
+                        <i data-lucide="message-circle-code" class="w-4 h-4"></i> AI가 제안하는 최적의 대답
+                    </h3>
+                    
+                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-semibold px-2.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">추천 1 (부드러운 공감형)</span>
+                        </div>
+                        <p id="res-reply-1" class="text-slate-200 text-sm leading-relaxed"></p>
+                    </div>
+
+                    <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-semibold px-2.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">추천 2 (명확한 경계 및 솔직함)</span>
+                        </div>
+                        <p id="res-reply-2" class="text-slate-200 text-sm leading-relaxed"></p>
+                    </div>
+                </div>
+
+                <!-- 4. 앞으로의 방향성 (사용자 직접 결정 영역 가이드) -->
+                <div class="bg-slate-900 p-5 rounded-xl border border-slate-800 space-y-3">
+                    <h3 class="text-sm font-semibold text-amber-400 flex items-center gap-1.5">
+                        <i data-lucide="compass" class="w-4 h-4"></i> 내가 직접 결정할 앞으로의 방향성
+                    </h3>
+                    <p class="text-xs text-slate-400">AI의 조언을 참고하여 자신에게 맞는 대화 방식을 최종 선택하세요.</p>
+                    <div class="flex gap-3 pt-2">
+                        <button onclick="alert('조언이 적용되었습니다. 상대방에게 마음을 전해보세요.')" class="flex-1 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 text-xs py-2.5 rounded-lg font-medium transition-all">
+                            조언을 활용해 대화 이어가기
+                        </button>
+                        <button onclick="alert('시간을 두고 마음을 다스리는 것을 추천합니다.')" class="flex-1 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 text-xs py-2.5 rounded-lg font-medium transition-all">
+                            잠시 시간을 두고 조율하기
+                        </button>
+                    </div>
+                </div>
+
+                <button onclick="restart()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-3 rounded-lg border border-slate-700 transition-all text-sm font-medium">
+                    새로운 갈등 상황 해독하기
+                </button>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 py-6 text-center text-xs text-slate-500">
+        <p>© DECODE Inc. AI 기반 갈등 해결 및 관계 회복 프로젝트</p>
+    </footer>
+
+    <!-- JavaScript logic -->
+    <script>
+        lucide.createIcons();
+
+        let currentStep = 1;
+
+        function updateStepUI(step) {
+            document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(`step-${step}`).classList.add('active');
+            
+            const titles = [
+                "상대방 및 상황 입력",
+                "상대의 말 정리",
+                "나의 감정 상태 확인",
+                "AI/알고리즘 상황 분석 중",
+                "해독 결과 및 최적의 답변"
+            ];
+            
+            document.getElementById('step-indicator').innerText = `STEP ${step} / 5`;
+            document.getElementById('step-title').innerText = titles[step - 1];
+            document.getElementById('progress-bar').style.width = `${(step / 5) * 100}%`;
+        }
+
+        function nextStep(step) {
+            currentStep = step;
+            updateStepUI(currentStep);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function selectEmotion(btn, value) {
+            document.querySelectorAll('.emotion-btn').forEach(b => {
+                b.classList.remove('border-indigo-500', 'bg-indigo-950/50');
+            });
+            btn.classList.add('border-indigo-500', 'bg-indigo-950/50');
+            document.getElementById('selected-emotion-val').value = value;
+        }
+
+        function startAnalysis() {
+            nextStep(4);
+            
+            // AI 시뮬레이션 로직 (2.5초 후 결과 도출)
+            setTimeout(() => {
+                generateResults();
+                nextStep(5);
+            }, 2500);
+        }
+
+        function generateResults() {
+            const relation = document.getElementById('relation').value;
+            const personality = document.getElementById('target-personality').value || "성향 미입력";
+            const situation = document.getElementById('situation').value || "상황 미입력";
+            const targetWords = document.getElementById('target-words').value || "말 미입력";
+            const emotion = document.getElementById('selected-emotion-val').value;
+
+            // 1. 상황 요약
+            document.getElementById('res-situation-summary').innerText = 
+                `[${relation} 관계] ${situation} 내 상황에서 갈등이 발생했습니다. 작성자님은 현재 '${emotion}' 감정을 느끼고 있으며, 상대의 성향(${personality})이 대화에 큰 영향을 미치고 있습니다.`;
+
+            // 2. 상대방 말의 속뜻 해독 (AI 분석 결과 시뮬레이션)
+            document.getElementById('res-target-words').innerText = targetWords;
+            document.getElementById('res-decoded-meaning').innerText = 
+                `"상대방의 표현은 거칠거나 차가워 보이지만, 본질은 [${targetWords}]라는 말 뒤에 '내 서운함과 불만을 알아주고 인정해달라'는 방어 기제가 포함되어 있습니다. 상대는 현재 자신의 지위나 감정이 무시당했다고 느껴 자존심을 지키려는 상태입니다."`;
+
+            // 3. 최적의 답변 생성
+            document.getElementById('res-reply-1').innerText = 
+                `"내가 속상하게 만들려던 게 아니었는데 오해가 생긴 것 같아 미안해. 네 입장에서는 그렇게 느꼈을 수 있겠다. 잠시 감정을 가라앉히고 우리 편하게 다시 이야기해볼까?"`;
+            
+            document.getElementById('res-reply-2').innerText = 
+                `"네가 그렇게 말하니까 나도 조금 서운하네. 하지만 서로 감정 상하려고 대화하는 건 아니니까, 내 의도가 무엇이었는지 차근차근 설명해 줄게. 들어줄 수 있을까?"`;
+        }
+
+        function restart() {
+            document.getElementById('target-personality').value = '';
+            document.getElementById('situation').value = '';
+            document.getElementById('target-words').value = '';
+            document.getElementById('my-feeling-detail').value = '';
+            nextStep(1);
+        }
+    </script>
+</body>
+</html>
